@@ -4,23 +4,24 @@
   </a>
 </p>
 
-# Bitcast Deploy (Minimal)
+# Bitcast Deploy — Minimal Validator Launcher
 
-Deploy one validator for each codebase (Bitcast video + Bitcast X) with a single command.
+Bitcast is a decentralized protocol aligning brands, creators, and validators across two production subnets. This repository provides the fastest way to launch validators with production defaults.
 
-## What is Bitcast?
-Bitcast is a decentralized platform that connects brands with creators and rewards high‑quality content. There are two subnets:
-- Bitcast (YouTube): briefs, video analytics validation, and rewards on subnet 93.
-- Bitcast X (X.com): social mining and validation based on influence and engagement.
+- Bitcast (YouTube): briefs, video analytics validation, and on‑chain rewards on subnet 93
+- Bitcast X (X.com): social mining and validation based on influence and engagement
 
-**Scope of this repo**: This repository is for deploying validator processes only (one validator for Bitcast video and one for Bitcast X). If you want to mine, please follow the miner instructions in the specific repo you intend to use (YouTube or X).
+---
 
-## Prerequisites
-- Repos present on the host:
-  - Bitcast (video): `/home/ubuntu/bitcast`
-  - Bitcast X (X.com): `/home/ubuntu/bitcast-x`
-  - Override paths with `BITCAST_DIR` and `BITCAST_X_DIR` if needed.
-- SSH/user has permission to install packages (the repo scripts install pm2 and Python deps).
+This repository deploys validators only (one for Bitcast video and one for Bitcast X). If you want to mine, use the specific repo for YouTube or X.
+
+## Highlights
+- **One‑command deploy**: Start both validators in a single step
+- **Process management**: pm2‑managed services with restart, uptime, and logs
+- **Hermetic environments**: Per‑repo Python venvs, idempotent setup scripts
+- **Single‑source configuration**: One `.env` fanned out to both validators
+- **Secure by default**: X validator can run in Weight‑Copy mode (no API keys). Full validation uses API keys via env files only.
+- **Observability**: `pm2 status`, `pm2 logs <name>` for quick diagnosis
 
 ## Quickstart
 ```bash
@@ -55,7 +56,7 @@ Bitcast (video) validator also requires (full validation):
 - `CHUTES_API_KEY`
 - `WANDB_API_KEY`
 
-Bitcast X validator can run in Weight-Copy mode without API keys, but will warn if missing; the master `.env` supports setting them if you run full validation.
+Bitcast X validator can run in Weight‑Copy mode without API keys, but will warn if missing; the master `.env` supports setting them if you run full validation.
 
 ## What this does
 - Syncs your master `.env` into both repos
