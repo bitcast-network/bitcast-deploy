@@ -1,3 +1,9 @@
+<p align="center">
+  <a href="https://www.bitcast.network/">
+    <img src="assets/lockup_gradient.svg" alt="Bitcast Logo" width="800" />
+  </a>
+</p>
+
 # Bitcast Deploy (Minimal)
 
 Deploy one validator for each codebase (Bitcast video + Bitcast X) with a single command.
