@@ -8,6 +8,13 @@
 
 Deploy one validator for each codebase (Bitcast video + Bitcast X) with a single command.
 
+## What is Bitcast?
+Bitcast is a decentralized platform that connects brands with creators and rewards high‑quality content. There are two subnets:
+- Bitcast (YouTube): briefs, video analytics validation, and rewards on subnet 93.
+- Bitcast X (X.com): social mining and validation based on influence and engagement.
+
+**Scope of this repo**: This repository is for deploying validator processes only (one validator for Bitcast video and one for Bitcast X). If you want to mine, please follow the miner instructions in the specific repo you intend to use (YouTube or X).
+
 ## Prerequisites
 - Repos present on the host:
   - Bitcast (video): `/home/ubuntu/bitcast`
