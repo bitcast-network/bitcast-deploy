@@ -60,7 +60,17 @@ cd bitcast-deploy
 
 > **Note**: The deployment script will automatically clone the `bitcast` and `bitcast-x` repositories into a consolidated directory structure.
 
-### 2. Configure Environment
+### 2. Install System Dependencies
+
+Run the system setup script once (requires sudo):
+
+```bash
+bash scripts/system_setup.sh
+```
+
+This installs Python, npm, and PM2. You only need to run this once per server.
+
+### 3. Configure Environment
 
 Create your configuration file:
 
@@ -77,7 +87,16 @@ Edit `.env` and set your validator configuration:
 - `CHUTES_API_KEY`: Your Chutes.ai API key
 - `WANDB_API_KEY`: Your Weights & Biases API key
 
-### 3. Deploy Validators
+**Ports:**
+- `BITCAST_PORT`: YouTube validator port (default: 8092)
+- `BITCAST_X_PORT`: X validator port (default: 8093)
+  
+> **Note**: Each validator requires a unique port. Make sure these ports are not in use by other services.
+
+**Optional:**
+- `DISABLE_AUTO_UPDATE`: Set to `true` to disable automatic updates (default: true)
+
+### 4. Deploy Validators
 
 Run the deployment script:
 
@@ -86,15 +105,18 @@ bash scripts/deploy.sh
 ```
 
 This script will:
+- Check that system dependencies are installed
 - Create a consolidated directory structure under `repos/`
 - Automatically clone the `bitcast` and `bitcast-x` repositories (if not present)
 - Create isolated Python virtual environments for each validator
-- Install all required dependencies
+- Install Python dependencies for both validators
 - Configure PM2 process management
 - Synchronize your `.env` configuration to both validators
 - Start both validator services
 
-### 4. Register on Bittensor Network (If Not Already Registered)
+> **Note**: The deploy script no longer runs `apt install` commands, preventing lock conflicts. System dependencies are installed once via `system_setup.sh`.
+
+### 5. Register on Bittensor Network (If Not Already Registered)
 
 If you haven't already registered a UID for your validator:
 

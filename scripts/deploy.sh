@@ -12,10 +12,6 @@ BITCAST_VENV="$REPOS_DIR/venv_bitcast"
 BITCAST_X_VENV="$REPOS_DIR/venv_bitcast_x"
 MASTER_ENV="$REPO_ROOT/.env"
 
-# Allow environment variable overrides for advanced users
-BITCAST_DIR=${BITCAST_DIR:-$BITCAST_DIR}
-BITCAST_X_DIR=${BITCAST_X_DIR:-$BITCAST_X_DIR}
-
 usage() {
   echo "Usage: $0"
   echo "Consolidated deployment under: $REPO_ROOT"
@@ -38,7 +34,24 @@ fi
 echo "✓ Master .env found"
 
 #######################
-# 2. Create directory structure
+# 2. Check system dependencies
+#######################
+echo ""
+echo "🔧 Checking system dependencies..."
+
+if ! command -v pm2 &> /dev/null || ! command -v python3 &> /dev/null; then
+    echo "❌ System dependencies not installed"
+    echo ""
+    echo "Please run the system setup first:"
+    echo "  bash scripts/system_setup.sh"
+    echo ""
+    exit 1
+fi
+
+echo "✓ System dependencies installed"
+
+#######################
+# 3. Create directory structure
 #######################
 echo ""
 echo "📁 Setting up directory structure..."
@@ -47,7 +60,7 @@ mkdir -p "$REPOS_DIR"
 echo "✓ Directory structure created"
 
 #######################
-# 3. Clone repositories
+# 4. Clone repositories
 #######################
 echo ""
 echo "📦 Checking repositories..."
@@ -69,14 +82,14 @@ fi
 echo "✓ Repositories ready"
 
 #######################
-# 4. Sync .env files
+# 5. Sync .env files
 #######################
 echo ""
 echo "🔗 Syncing environment configuration..."
 bash "$REPO_ROOT/scripts/sync_env.sh"
 
 #######################
-# 5. Setup environments
+# 6. Setup environments
 #######################
 echo ""
 echo "🐍 Setting up Python virtual environments..."
@@ -86,36 +99,39 @@ set -a
 source "$MASTER_ENV"
 set +a
 
-# Setup bitcast validator
-echo "   Setting up bitcast validator environment..."
-export VENV_PATH="$BITCAST_VENV"
-bash "$BITCAST_DIR/scripts/setup_env.sh"
+# Set default ports if not specified
+BITCAST_PORT=${BITCAST_PORT:-8092}
+BITCAST_X_PORT=${BITCAST_X_PORT:-8093}
 
-# Setup bitcast-x validator
-echo "   Setting up bitcast-x validator environment..."
-export VENV_PATH="$BITCAST_X_VENV"
-bash "$BITCAST_X_DIR/scripts/setup_env.sh"
+# Setup bitcast validator (using our lightweight script)
+bash "$REPO_ROOT/scripts/setup_venv.sh" "$BITCAST_DIR" "$BITCAST_VENV" "bitcast"
+
+# Setup bitcast-x validator (using our lightweight script)
+bash "$REPO_ROOT/scripts/setup_venv.sh" "$BITCAST_X_DIR" "$BITCAST_X_VENV" "bitcast-x"
 
 echo "✓ Virtual environments configured"
 
 #######################
-# 6. Start validators
+# 7. Start validators
 #######################
 echo ""
 echo "🚀 Starting validators..."
 
-# Set venv paths for run scripts
+# Start bitcast validator with its port
 export VENV_PATH="$BITCAST_VENV"
+export PORT="$BITCAST_PORT"
 bash "$BITCAST_DIR/scripts/run_validator.sh"
 
+# Start bitcast-x validator with its port
 export VENV_PATH="$BITCAST_X_VENV"
+export PORT="$BITCAST_X_PORT"
 bash "$BITCAST_X_DIR/scripts/run_validator.sh"
 
 echo ""
 echo "✓ Validators started"
 
 #######################
-# 7. Show status
+# 8. Show status
 #######################
 echo ""
 echo "📊 Validator Status:"
