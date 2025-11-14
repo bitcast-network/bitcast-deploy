@@ -4,67 +4,217 @@
   </a>
 </p>
 
-# Bitcast Deploy — Minimal Validator Launcher
+# Bitcast Deploy — Multi-Validator Setup
 
-Bitcast is a decentralized protocol aligning brands, creators, and validators across two production subnets. This repository provides the fastest way to launch validators with production defaults.
-
-- Bitcast (YouTube): briefs, video analytics validation, and on‑chain rewards on subnet 93
-- Bitcast X (X.com): social mining and validation based on influence and engagement
+Bitcast is a decentralized protocol connecting brands with creators through on-chain incentives across multiple content platforms.
 
 ---
 
-This repository deploys validators only (one for Bitcast video and one for Bitcast X). If you want to mine, use the specific repo for YouTube or X.
+## ⚙️ The Bitcast Ecosystem
 
-## Highlights
-- **One‑command deploy**: Start both validators in a single step
-- **Process management**: pm2‑managed services with restart, uptime, and logs
-- **Hermetic environments**: Per‑repo Python venvs, idempotent setup scripts
-- **Single‑source configuration**: One `.env` fanned out to both validators
-- **Secure by default**: X validator can run in Weight‑Copy mode (no API keys). Full validation uses API keys via env files only.
-- **Observability**: `pm2 status`, `pm2 logs <name>` for quick diagnosis
+Bitcast operates the following bittensor subnet mechanisms on netuid-93:
 
-## Quickstart
+- **[Bitcast Youtube](https://github.com/bitcast-network/bitcast)**: YouTube content mining with analytics-based validation and rewards  
+- **[Bitcast X](https://github.com/bitcast-network/bitcast-x)**: X.com social mining with influence-based scoring and engagement tracking
+
+---
+
+## 🚀 Getting Started
+
+### For Miners
+
+To mine, choose your platform and follow the setup instructions in its repository:
+
+- **YouTube**: [github.com/bitcast-network/bitcast](https://github.com/bitcast-network/bitcast)
+- **X (Twitter)**: [github.com/bitcast-network/bitcast-x](https://github.com/bitcast-network/bitcast-x)
+
+### For Validators
+
+This repository provides a streamlined setup to run validators for **both** Bitcast subnets simultaneously from a single configuration.
+
+**Key Features:**
+- **One-command deployment**: Start both validators in a single step
+- **Unified configuration**: Single `.env` file for both validators
+- **Process management**: PM2-managed services with automatic restart and logging
+- **Isolated environments**: Separate Python virtual environments per subnet
+
+---
+
+## 💻 System Requirements
+
+- **Operating System**: Linux
+- **CPU**: 1+ cores
+- **RAM**: 2+ GB
+
+---
+
+## 🔧 Installation & Setup
+
+### 1. Clone this Repository
+
 ```bash
-# 1) Configure env
-cp env.example .env
-# edit .env and fill values (wallet, optional API keys)
-
-# 2) Deploy both validators
-bash scripts/deploy.sh
-
-# 3) Check status / logs
-bash scripts/status.sh
-pm2 logs bitcast_validator
-pm2 logs bitcast_x_validator
-
-# 4) Stop both validators
-bash scripts/stop.sh
+cd ~
+git clone https://github.com/bitcast-network/bitcast-deploy.git
+cd bitcast-deploy
 ```
 
-## Environment
-Single master `.env` is used for both validators. It is symlinked into each repo at the location they expect (`bitcast/validator/.env`).
+> **Note**: The deployment script will automatically clone the `bitcast` and `bitcast-x` repositories into a consolidated directory structure.
 
-Minimum required variables:
-- `WALLET_NAME`: Bittensor wallet name (coldkey)
-- `HOTKEY_NAME`: Validator hotkey
-- `NETUID` (default `93`)
-- `SUBTENSOR_NETWORK` (default `finney`)
-- `SUBTENSOR_CHAIN_ENDPOINT` (default `wss://entrypoint-finney.opentensor.ai:443`)
+### 2. Configure Environment
 
-Bitcast (video) validator also requires (full validation):
-- `RAPID_API_KEY`
-- `CHUTES_API_KEY`
-- `WANDB_API_KEY`
+Create your configuration file:
 
-Bitcast X validator can run in Weight‑Copy mode without API keys, but will warn if missing; the master `.env` supports setting them if you run full validation.
+```bash
+cp env.example .env
+```
 
-## What this does
-- Syncs your master `.env` into both repos
-- Runs each repo’s `scripts/setup_env.sh` (creates venvs, installs deps, pm2 if needed)
-- Starts exactly two pm2 processes:
-  - `bitcast_validator` (video)
-  - `bitcast_x_validator` (X.com)
+Edit `.env` and set your validator configuration:
 
-## References
-- Bitcast (video) README: see repo at `/home/ubuntu/bitcast/README.md`
-- Bitcast X README: see repo at `/home/ubuntu/bitcast-x/README.md`
+**Required:**
+- `WALLET_NAME`: Your Bittensor wallet name (coldkey)
+- `HOTKEY_NAME`: Your validator hotkey name
+- `RAPID_API_KEY`: Your RapidAPI key
+- `CHUTES_API_KEY`: Your Chutes.ai API key
+- `WANDB_API_KEY`: Your Weights & Biases API key
+
+### 3. Deploy Validators
+
+Run the deployment script:
+
+```bash
+bash scripts/deploy.sh
+```
+
+This script will:
+- Create a consolidated directory structure under `repos/`
+- Automatically clone the `bitcast` and `bitcast-x` repositories (if not present)
+- Create isolated Python virtual environments for each validator
+- Install all required dependencies
+- Configure PM2 process management
+- Synchronize your `.env` configuration to both validators
+- Start both validator services
+
+### 4. Register on Bittensor Network (If Not Already Registered)
+
+If you haven't already registered a UID for your validator:
+
+```bash
+# Register Subnet 93
+btcli subnet register \
+  --netuid 93 \
+  --wallet.name <WALLET_NAME> \
+  --wallet.hotkey <HOTKEY_NAME>
+```
+
+---
+
+## 📊 Managing Your Validators
+
+Both validators run as PM2 processes:
+- `bitcast_validator` - Bitcast YouTube validator
+- `bitcast_x_validator` - Bitcast X validator
+
+Use standard PM2 commands to manage them: `pm2 status`, `pm2 logs`, `pm2 restart`, etc.
+
+---
+
+## 📁 Project Structure
+
+After deployment, your directory structure will look like this:
+
+```
+bitcast-deploy/
+├── .env                   # Master configuration (symlinked to validators)
+├── .gitignore            # Excludes repos and .env from git
+├── env.example           # Example environment configuration
+├── README.md
+│
+├── scripts/
+│   ├── deploy.sh         # Main deployment script
+│   ├── sync_env.sh       # Syncs .env to validators
+│   ├── status.sh         # Check validator status
+│   └── stop.sh           # Stop all validators
+│
+└── repos/                # All repositories and virtual environments
+    ├── bitcast/          # YouTube validator (auto-cloned)
+    ├── bitcast-x/        # X validator (auto-cloned)
+    ├── venv_bitcast/     # YouTube validator venv
+    └── venv_bitcast_x/   # X validator venv
+```
+
+**Key Features:**
+- **Consolidated Structure**: Everything under one parent directory
+- **Single Configuration**: Master `.env` file symlinked to both validators
+- **Isolated Environments**: Separate venvs prevent dependency conflicts
+- **Auto-update Compatible**: Repos maintain their git history for auto-updates
+- **Simple Layout**: Repos and their venvs live together as siblings
+
+---
+
+## ℹ️ General Notes
+
+- **Auto-updates**: Both validators support automatic updates - git operations work normally in nested repos
+- **Configuration sync**: The master `.env` file is automatically symlinked to both validator directories
+- **Process isolation**: Each validator runs as a separate PM2 process for reliability
+- **Data persistence**: Cache and logs are managed by the validators within their repo directories
+
+---
+
+## 🔄 Migrating from Old Structure
+
+If you previously had validators installed at `~/bitcast/` and `~/bitcast-x/`:
+
+**Option 1: Fresh Install (Recommended)**
+```bash
+# Stop old validators
+pm2 stop all
+pm2 delete all
+
+# Backup your .env if needed
+cp ~/bitcast/bitcast/validator/.env ~/bitcast-deploy/.env
+
+# Remove old directories
+rm -rf ~/bitcast ~/bitcast-x ~/venv_bitcast ~/venv_bitcast_x
+
+# Run new deployment
+cd ~/bitcast-deploy
+bash scripts/deploy.sh
+```
+
+**Option 2: Move Existing Repos (Preserves existing data/venvs)**
+```bash
+# Stop validators
+pm2 stop all
+pm2 delete all
+
+# Create new structure
+mkdir -p ~/bitcast-deploy/repos
+
+# Move existing repos and venvs
+mv ~/bitcast ~/bitcast-deploy/repos/
+mv ~/bitcast-x ~/bitcast-deploy/repos/
+mv ~/venv_bitcast ~/bitcast-deploy/repos/
+mv ~/venv_bitcast_x ~/bitcast-deploy/repos/
+
+# Copy your .env to the master location
+cp ~/bitcast-deploy/repos/bitcast/bitcast/validator/.env ~/bitcast-deploy/.env
+
+# Run deployment (will detect existing repos and venvs)
+cd ~/bitcast-deploy
+bash scripts/deploy.sh
+```
+
+---
+
+## 🤝 Contact & Support
+
+For assistance or questions, join our Discord support channel:
+
+[Bitcast Support on Bittensor Discord](https://discord.com/channels/799672011265015819/1362489640841380045)
+
+---
+
+## 🔗 Links
+
+- **Website**: [bitcast.network](https://www.bitcast.network/)
+- **Token**: [Bitcast on CoinGecko](https://www.coingecko.com/en/coins/bitcast)
