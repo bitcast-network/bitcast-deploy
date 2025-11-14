@@ -18,17 +18,14 @@ else
     echo "  ✓ Virtual environment already exists"
 fi
 
-# Activate virtual environment
-source "$VENV_PATH/bin/activate"
-
 # Change to repo directory
 cd "$REPO_DIR"
 
-# Install/upgrade dependencies
+# Install/upgrade dependencies using venv's pip directly
 echo "  Installing Python packages..."
-pip install --upgrade pip -q
-pip install -r requirements.txt -q
-pip install -e . -q
+"$VENV_PATH/bin/pip" install --upgrade pip -q
+"$VENV_PATH/bin/pip" install -r requirements.txt -q
+"$VENV_PATH/bin/pip" install -e . -q
 
 echo "  ✓ Python environment ready for $REPO_NAME"
 
