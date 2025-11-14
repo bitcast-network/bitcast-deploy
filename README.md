@@ -4,7 +4,8 @@
   </a>
 </p>
 
-# Bitcast Deploy — Multi-Validator Setup
+# Bitcast — The Decentralized Creator Economy
+
 
 Bitcast is a decentralized protocol connecting brands with creators through on-chain incentives across multiple content platforms.
 
@@ -101,7 +102,7 @@ Edit `.env` and set your validator configuration:
 Run the deployment script:
 
 ```bash
-bash scripts/deploy.sh
+bash scripts/deploy_validators.sh
 ```
 
 This script will:
@@ -152,7 +153,7 @@ bitcast-deploy/
 ├── README.md
 │
 ├── scripts/
-│   ├── deploy.sh         # Main deployment script
+│   ├── deploy_validators.sh         # Main deployment script
 │   ├── sync_env.sh       # Syncs .env to validators
 │   ├── status.sh         # Check validator status
 │   └── stop.sh           # Stop all validators
@@ -200,7 +201,7 @@ rm -rf ~/bitcast ~/bitcast-x ~/venv_bitcast ~/venv_bitcast_x
 
 # Run new deployment
 cd ~/bitcast-deploy
-bash scripts/deploy.sh
+bash scripts/deploy_validators.sh
 ```
 
 **Option 2: Move Existing Repos (Preserves existing data/venvs)**
@@ -223,7 +224,7 @@ cp ~/bitcast-deploy/repos/bitcast/bitcast/validator/.env ~/bitcast-deploy/.env
 
 # Run deployment (will detect existing repos and venvs)
 cd ~/bitcast-deploy
-bash scripts/deploy.sh
+bash scripts/deploy_validators.sh
 ```
 
 ---
